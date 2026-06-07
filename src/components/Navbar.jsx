@@ -1,5 +1,5 @@
-import React from "react";
-import { ShoppingBag, Search, User, LayoutDashboard, Store, Menu } from "lucide-react";
+import React, { useState } from "react";
+import { ShoppingBag, Search, User, LayoutDashboard, Store, Menu, X } from "lucide-react";
 import { INK } from "../constants/data";
 
 const TICKER = [
@@ -10,8 +10,11 @@ const TICKER = [
 ];
 
 export default function Navbar({ view, setView, cartCount, setCartOpen }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const go = (target) => {
     setView(target);
+    setMobileMenuOpen(false); // Close the menu when navigating
     window.scrollTo({ top: 0 });
   };
 
@@ -53,16 +56,17 @@ export default function Navbar({ view, setView, cartCount, setCartOpen }) {
           className="w-full max-w-[1400px] mx-auto px-5 sm:px-8 grid grid-cols-[1fr_auto_1fr] items-center"
           style={{ height: 70 }}
         >
-          {/* Left — links (desktop) / menu (mobile) */}
+          {/* Left — links (desktop) / menu trigger (mobile) */}
           <div className="flex items-center">
             <button
               className="md:hidden bg-transparent border-none cursor-pointer p-0"
               style={{ color: INK }}
-              onClick={() => go("collections")}
-              aria-label="Menu"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open Menu"
             >
               <Menu size={22} />
             </button>
+            
             <div className="hidden md:flex items-center gap-8">
               {links.map((l) => (
                 <a
@@ -129,6 +133,70 @@ export default function Navbar({ view, setView, cartCount, setCartOpen }) {
                 </span>
               )}
             </button>
+          </div>
+        </div>
+
+        {/* Mobile Slide-out Menu Drawer */}
+        <div 
+          className={`fixed inset-0 z-50 bg-black/40 transition-opacity duration-300 md:hidden ${
+            mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          }`}
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <div 
+            className={`absolute top-0 left-0 w-[280px] h-full bg-white p-6 flex flex-col justify-between shadow-xl transition-transform duration-300 ease-in-out ${
+              mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
+            onClick={(e) => e.stopPropagation()} // Stop click overlay closing when clicking inside panel
+          >
+            <div>
+              {/* Header inside drawer */}
+              <div className="flex items-center justify-between pb-6 mb-6" style={{ borderBottom: "1px solid #ECECEC" }}>
+                <span style={{ color: INK, fontWeight: 800, letterSpacing: "0.1em" }} className="text-sm uppercase">Menu</span>
+                <button 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="bg-transparent border-none cursor-pointer p-0"
+                  style={{ color: INK }}
+                >
+                  <X size={22} />
+                </button>
+              </div>
+
+              {/* Links List */}
+              <div className="flex flex-col gap-5">
+                {links.map((l) => (
+                  <a
+                    key={l.label}
+                    onClick={() => go(l.view)}
+                    className="cursor-pointer text-[14px] font-bold uppercase tracking-[0.14em]"
+                    style={{
+                      color: INK,
+                      opacity: view === l.view ? 1 : 0.7
+                    }}
+                  >
+                    {l.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom utilities inside mobile drawer */}
+            <div className="flex flex-col gap-4 pt-6" style={{ borderTop: "1px solid #ECECEC" }}>
+              <button className="sm:hidden flex bg-transparent border-none cursor-pointer items-center gap-3 text-xs font-bold uppercase tracking-[0.12em]" style={{ color: INK }}>
+                <Search size={18} /> Search
+              </button>
+              <button className="sm:hidden flex bg-transparent border-none cursor-pointer items-center gap-3 text-xs font-bold uppercase tracking-[0.12em]" style={{ color: INK }}>
+                <User size={18} /> Account
+              </button>
+              <button
+                onClick={() => go(view === "admin" ? "shop" : "admin")}
+                className="lg:hidden flex bg-transparent border-none cursor-pointer items-center gap-3 text-xs font-bold uppercase tracking-[0.12em]"
+                style={{ color: INK }}
+              >
+                {view === "admin" ? <Store size={18} /> : <LayoutDashboard size={18} />}
+                {view === "admin" ? "Switch to Store" : "Switch to Admin"}
+              </button>
+            </div>
           </div>
         </div>
       </nav>
