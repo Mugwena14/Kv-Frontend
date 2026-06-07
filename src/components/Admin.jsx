@@ -9,7 +9,7 @@ import Customers from "./sections/Customers";
 import Discounts from "./sections/Discounts";
 import Invoices from "./sections/Invoices";
 import Settings from "./sections/Settings";
-import CoPilot from "./sections/CoPilot";
+import CoPilot from "./sections/Copilot";
 import { STORE, PRODUCTS, INK, ADMIN } from "../constants/data";
 import { LayoutDashboard, ShoppingBag, Package, Users, Percent, FileText, Sparkles, Settings as SettingsIcon } from "lucide-react";
 
